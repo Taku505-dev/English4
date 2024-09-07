@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英文並び替えゲーム - 先生用ページ</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f8ff;
+            color: #333;
+        }
+        h1, h2 {
+            color: #4a86e8;
+            text-align: center;
+        }
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #4a86e8;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4a86e8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: block;
+            margin: 20px auto;
+        }
+        button:hover {
+            background-color: #3a76d8;
+        }
+        #output, #qrcode {
+            margin-top: 20px;
+            text-align: center;
+        }
+        #qrcode img {
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 英文並び替えゲーム 🎮</h1>
+    <h2>先生用ページ</h2>
+    <div class="container">
+        <p>英文を入力して、生徒用のゲームリンクを作成しましょう！</p>
+        <textarea id="input-text" rows="5" placeholder="英文を入力してください。ピリオド（.）、クエスチョンマーク（?）、感嘆符（!）で文が区切られます。"></textarea>
+        <button onclick="processInput()">ゲームを作成！</button>
+    </div>
+    <div id="output" class="container"></div>
+    <div id="qrcode" class="container"></div>
+
+    <script>
+        function processInput() {
+            const input = document.getElementById('input-text').value;
+            const sentences = input.match(/[^.!?]+[.!?]+/g)
+                .map(sentence => sentence.trim())
+                .filter(sentence => sentence !== '');
+            
+            const output = document.getElementById('output');
+            output.innerHTML = '<h3>ゲームの準備ができました！</h3>';
+            output.innerHTML += '<p>以下のリンクを生徒に共有してください：</p>';
+            
+            const encodedSentences = encodeURIComponent(JSON.stringify(sentences));
+            const studentUrl = `student.html?sentences=${encodedSentences}`;
+            
+            output.innerHTML += `<a href="${studentUrl}" target="_blank" style="color: #4a86e8;">${studentUrl}</a>`;
+
+            generateQRCode(studentUrl);
+        }
+
+        function generateQRCode(url) {
+            const qrcodeContainer = document.getElementById('qrcode');
+            qrcodeContainer.innerHTML = '';
+            
+            new QRCode(qrcodeContainer, {
+                text: url,
+                width: 128,
+                height: 128,
+                colorDark : "#4a86e8",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+
+            const qrCodeLabel = document.createElement('p');
+            qrCodeLabel.textContent = 'QRコードをスキャンしてゲームを開始！';
+            qrcodeContainer.insertBefore(qrCodeLabel, qrcodeContainer.firstChild);
+        }
+    </script>
+</body>
+</html>
